@@ -174,18 +174,18 @@ scraper = cloudscraper.create_scraper(
     }
 )
 scraper = cloudscraper.create_scraper(
-  interpreter='nodejs',
-  recaptcha={
-    'provider': '2captcha',
-    'api_key': '1abc234de56fab7c89012d34e56fa7b8'
-  }
+  #interpreter='nodejs',
+  #recaptcha={
+  #  'provider': '2captcha',
+  #  'api_key': '1abc234de56fab7c89012d34e56fa7b8'
+  #}
 )
 scraper = cloudscraper.create_scraper(
-  interpreter='nodejs',
-  recaptcha={
-    'provider': 'anticaptcha',
-    'api_key': 'P6KLRNy7h3K160ZmYNUOAce7'
-  }
+  #interpreter='nodejs',
+  #recaptcha={
+  #  'provider': 'anticaptcha',
+  #  'api_key': 'P6KLRNy7h3K160ZmYNUOAce7'
+  #}
 )
 session = requests.session()
 scraper = cloudscraper.create_scraper(sess=session)
